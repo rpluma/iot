@@ -1,6 +1,3 @@
-// https://randomnerdtutorials.com/esp32-mpu-6050-web-server/
-
-
 /*********
   Rui Santos
   Complete project details at https://RandomNerdTutorials.com/esp32-mpu-6050-web-server/
@@ -14,22 +11,22 @@
 
 #include <Arduino.h>
 #include <WiFi.h>
-//#include <AsyncTCP.h>
-//#include <ESPAsyncWebServer.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
 #include <Arduino_JSON.h>
-//#include "SPIFFS.h"
+#include "SPIFFS.h"
 
 // Replace with your network credentials
-//const char* ssid = "REPLACE_WITH_YOUR_SSID";
-//const char* password = "REPLACE_WITH_YOUR_PASSWORD";
+const char* ssid = "Mirador de Malaga";
+const char* password = "MALAGA0621";
 
 // Create AsyncWebServer object on port 80
-//AsyncWebServer server(80);
+AsyncWebServer server(80);
 
 // Create an Event Source on /events
-//AsyncEventSource events("/events");
+AsyncEventSource events("/events");
 
 // Json Variable to Hold Sensor Readings
 JSONVar readings;
@@ -52,9 +49,10 @@ float accX, accY, accZ;
 float temperature;
 
 //Gyroscope sensor deviation
-float gyroXerror = 0.07;
-float gyroYerror = 0.03;
-float gyroZerror = 0.01;
+// Rotation X: -0.08, Y: -0.00, Z: 0.00 rad/s
+float gyroXerror = -0.08; // 0.07;
+float gyroYerror = -0.00; //0.03;
+float gyroZerror = 0.00; // 0.01;
 
 // Init MPU6050
 void initMPU(){
@@ -67,7 +65,6 @@ void initMPU(){
   Serial.println("MPU6050 Found!");
 }
 
-/*
 void initSPIFFS() {
   if (!SPIFFS.begin()) {
     Serial.println("An error has occurred while mounting SPIFFS");
@@ -88,13 +85,11 @@ void initWiFi() {
   Serial.println("");
   Serial.println(WiFi.localIP());
 }
-*/
 
 String getGyroReadings(){
   mpu.getEvent(&a, &g, &temp);
 
   float gyroX_temp = g.gyro.x;
-  
   if(abs(gyroX_temp) > gyroXerror)  {
     gyroX += gyroX_temp/50.00;
   }
@@ -138,13 +133,10 @@ String getTemperature(){
 
 void setup() {
   Serial.begin(115200);
-  delay(1000);
-  Serial.println("Inicializando");
-//  initWiFi();
-//  initSPIFFS();
+  initWiFi();
+  initSPIFFS();
   initMPU();
 
-/*
   // Handle Web Server
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/index.html", "text/html");
@@ -186,37 +178,22 @@ void setup() {
   server.addHandler(&events);
 
   server.begin();
-  */
 }
 
 void loop() {
-  static unsigned int msLast = 0;
   if ((millis() - lastTime) > gyroDelay) {
     // Send Events to the Web Server with the Sensor Readings
-    //events.send(getGyroReadings().c_str(),"gyro_readings",millis());
-
-    //Serial.println(getGyroReadings().c_str());
-    getGyroReadings();
+    events.send(getGyroReadings().c_str(),"gyro_readings",millis());
     lastTime = millis();
   }
   if ((millis() - lastTimeAcc) > accelerometerDelay) {
     // Send Events to the Web Server with the Sensor Readings
-    //events.send(getAccReadings().c_str(),"accelerometer_readings",millis());
-    getAccReadings();
+    events.send(getAccReadings().c_str(),"accelerometer_readings",millis());
     lastTimeAcc = millis();
   }
   if ((millis() - lastTimeTemperature) > temperatureDelay) {
     // Send Events to the Web Server with the Sensor Readings
-    //events.send(getTemperature().c_str(),"temperature_reading",millis());
-    getTemperature();
+    events.send(getTemperature().c_str(),"temperature_reading",millis());
     lastTimeTemperature = millis();
   }
-  if (millis() > msLast) {
-      msLast = millis()+1000;
-      //Serial.println(getGyroReadings().c_str());
-      char sAux[100];
-      sprintf(sAux, "x=%0.1f, y=%0.1f, z=%0.1f\n", g.gyro.x, g.gyro.y, g.gyro.z);
-      Serial.print(sAux);
-  }
-
 }
