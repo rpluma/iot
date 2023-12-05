@@ -19,8 +19,8 @@
 #include "SPIFFS.h"
 
 // Replace with your network credentials
-const char* ssid = "Mirador de Malaga";
-const char* password = "MALAGA0621";
+const char* ssid = "infind01";
+const char* password = "infind01";
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
@@ -50,9 +50,9 @@ float temperature;
 
 //Gyroscope sensor deviation
 // Rotation X: -0.08, Y: -0.00, Z: 0.00 rad/s
-float gyroXerror = -0.08; // 0.07;
-float gyroYerror = -0.00; //0.03;
-float gyroZerror = 0.00; // 0.01;
+float gyroXerror = -0.08051; // 0.07;
+float gyroYerror = -0.00221; //0.03;
+float gyroZerror = 0.00545; // 0.01;
 
 // Init MPU6050
 void initMPU(){
