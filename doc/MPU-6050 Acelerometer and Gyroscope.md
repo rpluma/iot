@@ -3,7 +3,10 @@
 ### Board 
 
 - AliExpress: ESP32-DevKitC-32 / ESP-WROOM-32 (multicolor)
-- Arduino IDE: uPesy ESP32 Wroom DevKit ->
+- Arduino IDE: 
+	- KO: uPesy ESP32 Wroom DevKit
+	- KO: esp32c3 dev module
+	ESP32 Dev Module
 
 ### Pinout
 - GND, VCC

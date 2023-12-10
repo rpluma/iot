@@ -87,6 +87,7 @@ void setup(void) {
 
 void loop() {
 
+  static double sumX=0, sumY=0, sumZ=0, n=0;
   /* Get new sensor events with the readings */
   sensors_event_t a, g, temp;
   mpu.getEvent(&a, &g, &temp);
@@ -107,6 +108,11 @@ void loop() {
   Serial.print(", Z: ");
   Serial.print(g.gyro.z);
   Serial.println(" rad/s");
+  char strAux[200];
+  sprintf(strAux, "Rotation X: %0.4f, Y:%0.4f, Z:%0.4f", g.gyro.x, g.gyro.y, g.gyro.z);
+  sumX += g.gyro.x; sumY += g.gyro.y; sumZ += g.gyro.z; n+=1;
+  sprintf(strAux, "Rotation X: %0.5f, Y:%0.5f, Z:%0.5f", sumX/n, sumY/n, sumZ/n);  
+  Serial.println(strAux);
 
   Serial.print("Temperature: ");
   Serial.print(temp.temperature);
